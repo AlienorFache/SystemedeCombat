@@ -1,2 +1,3 @@
 # SystemedeCombat
-Projet cours algo a deux
+Marie Frey
+Aliénor Fache

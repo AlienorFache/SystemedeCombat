@@ -80,7 +80,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
     {
 
         printf("Choisissez un monstre a attaquer.\n");
-        scanf("%d",monstreChoisi);
+        scanf("%d",&monstreChoisi);
 
         tMonstre[monstreChoisi].life -= perso->degat;
         printf("%d life monstre\n", tMonstre[monstreChoisi].life);
@@ -114,7 +114,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
         if (perso->id == 2)
         {
             printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d",monstreChoisi);
+            scanf("%d",&monstreChoisi);
             tMonstre[monstreChoisi].life -= 10;
             tMonstre[monstreChoisi].poison = 2;
             perso->pm -= 5;
@@ -126,7 +126,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
         if (perso->id == 3)
         {
 			printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d",monstreChoisi);
+            scanf("%d",&monstreChoisi);
             tMonstre[monstreChoisi].agro = 1;
             printf("alfred agro le tank %d", tMonstre[monstreChoisi].agro);
         }

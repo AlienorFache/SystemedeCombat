@@ -4,7 +4,7 @@
 
 struct Monstre
 {
- 
+
     int life;
     int pm;
     int degats;
@@ -12,43 +12,41 @@ struct Monstre
     int poison;
     int agro;
 };
- 
+
 typedef struct Monstre monstre;
- 
 
-
-void actionMonstre (struct Monstre tMonstre[], int nbMonstre) {
-
-for (int i = 0; i < nbMonstre;  i++){
- 
-tMonstre[i].life = 100;
-
-tMonstre[i].pm = (rand ()%20)+1;
-
-if (tMonstre[i].pm > 10)
+void actionMonstre(struct Monstre tMonstre[], int nbMonstre)
 {
-tMonstre[i].degats=(rand ()%5)+1;
-}
-else
-{
-tMonstre[i].degats=(rand ()%11)+10;
-}
 
-if (tMonstre[i].degats > 15)
-{
-tMonstre[i].resistance = 1;
-}
-else
-{
-tMonstre[i].resistance = 2;
-}
+    for (int i = 0; i < nbMonstre; i++)
+    {
 
-tMonstre[i].poison = 0;
-tMonstre[i].agro = 0;
-}
+        tMonstre[i].life = 100;
 
-}
+        tMonstre[i].pm = (rand() % 20) + 1;
 
+        if (tMonstre[i].pm > 10)
+        {
+            tMonstre[i].degats = (rand() % 5) + 1;
+        }
+        else
+        {
+            tMonstre[i].degats = (rand() % 11) + 10;
+        }
+
+        if (tMonstre[i].degats > 15)
+        {
+            tMonstre[i].resistance = 1;
+        }
+        else
+        {
+            tMonstre[i].resistance = 2;
+        }
+
+        tMonstre[i].poison = 0;
+        tMonstre[i].agro = 0;
+    }
+}
 
 struct Perso
 {
@@ -64,7 +62,7 @@ typedef struct Perso perso;
 
 void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
 {
-	int monstreChoisi;
+    int monstreChoisi;
     int check = 0;
     while (check == 0)
     {
@@ -80,7 +78,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
     {
 
         printf("Choisissez un monstre a attaquer.\n");
-        scanf("%d",&monstreChoisi);
+        scanf("%d", &monstreChoisi);
 
         tMonstre[monstreChoisi].life -= perso->degat;
         printf("%d life monstre\n", tMonstre[monstreChoisi].life);
@@ -114,19 +112,18 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
         if (perso->id == 2)
         {
             printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d",&monstreChoisi);
+            scanf("%d", &monstreChoisi);
             tMonstre[monstreChoisi].life -= 10;
             tMonstre[monstreChoisi].poison = 2;
             perso->pm -= 5;
             printf("pm : %d, pv monstre : %d \n", perso->pm, tMonstre[monstreChoisi].life);
         }
-		
-		
+
         //tank
         if (perso->id == 3)
         {
-			printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d",&monstreChoisi);
+            printf("Choisissez un monstre a attaquer.\n");
+            scanf("%d", &monstreChoisi);
             tMonstre[monstreChoisi].agro = 1;
             printf("alfred agro le tank %d", tMonstre[monstreChoisi].agro);
         }
@@ -136,9 +133,8 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[])
 int main()
 {
 
-    
     int persoChoisi;
-	int nbMonstre;
+    int nbMonstre;
 
     //Creation Perso
 
@@ -147,14 +143,14 @@ int main()
     perso tank = {3, 100, 0, 15, 2};
 
     perso tPerso[3] = {mage, archer, tank};
-	
-	srand(time(NULL));
 
-	printf("Combien de monstres voulez vous affronter ?");
-	scanf("%d", &nbMonstre);
+    srand(time(NULL));
 
-	monstre tMonstre[nbMonstre];
-	actionMonstre(tMonstre,nbMonstre);
+    printf("Combien de monstres voulez vous affronter ?");
+    scanf("%d", &nbMonstre);
+
+    monstre tMonstre[nbMonstre];
+    actionMonstre(tMonstre, nbMonstre);
 
     while (mage.life > 0 && archer.life > 0 && tank.life > 0)
     {
@@ -170,7 +166,7 @@ int main()
         }
 
         //action du poison si necessaire
-       /* if (alfred.poison > 0)
+        /* if (alfred.poison > 0)
         {
             alfred.poison--;
             alfred.life -= 10;

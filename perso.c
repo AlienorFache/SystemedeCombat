@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-struct Monstre{
+struct Monstre
+{
 
     int life;
     int pm;
@@ -11,7 +12,7 @@ struct Monstre{
     int resistance;
     int poison;
     int agro;
-	int choix;
+    int choix;
 };
 
 typedef struct Monstre monstre;
@@ -31,18 +32,17 @@ struct Perso
 
 typedef struct Perso perso;
 
-void creationMonstre(struct Monstre tMonstre[], int nbMonstre)
+void creationMonstre(monstre tMonstre[], int nbMonstre)
 {
 
     for (int i = 0; i < nbMonstre; i++)
     {
 
-        tMonstre[i].life = 1;
+        tMonstre[i].life = 100;
 
         tMonstre[i].pm = 5;
 
-        
-            tMonstre[i].degats = (rand() % 11) + 10;
+        tMonstre[i].degats = (rand() % 11) + 10;
 
         if (tMonstre[i].degats > 15)
         {
@@ -72,41 +72,36 @@ void xpPerso(perso *perso)
     }
 }
 
-/*int checkMonstreChoisi(struct Monstre tMonstre[], int choix){
-	
-	int tSize = (int)( sizeof(tMonstre) / sizeof(tMonstre[0]) );
-	
-	if(choix<tSize && choix >=0 && tMonstre[choix].life>0){
-		return 1;
-	}
-	return 0;
+int checkMonstreChoisi(monstre tMonstre[], int choix, int nbMonstre)
+{
 
-}*/
+    //int tSize = (int)( sizeof(tMonstre) / sizeof(tMonstre[0]));
 
-void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[],int nbMonstre)
+    if (choix < nbMonstre && choix >= 0 && tMonstre[choix].life > 0)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// ne reconnait pas perso donc je laisse struct Perso mais reconnait monstre
+void actionPerso(perso *perso, monstre tMonstre[], struct Perso tPerso[], int nbMonstre)
 {
     int monstreChoisi;
     int check = 0;
-	int choix=0;
-	
-	while (choix=0){
+    int choix = 0;
 
-       printf("Choisissez un monstre a attaquer.\n");
-       scanf("%d", &monstreChoisi);
-	   
-	   /*choix = checkMonstreChoisi(tMonstre, monstreChoisi);*/
-		
-	}
-	
+    for (int i = 0; i < nbMonstre; i++)
+    {
+        if (tMonstre[i].life > 0)
+        {
+            printf("Caracteristiques du monstre %d : %d pv, %d degats, %d resitance\n", i, tMonstre[i].life, tMonstre[i].degats, tMonstre[i].resistance);
+        }
+    }
+
     while (check == 0)
     {
-		for (int i = 0; i < nbMonstre; i++){
-		
-			if (tMonstre[monstreChoisi].life >0){
-			printf("Caractéristiques du ou des monstres : Pour le monstre %d : %d pv, %d degats, %d resitance\n",i,tMonstre[i].life,tMonstre[i].degats,tMonstre[i].resistance);
-			}
-		}
-        printf("Tape 1 pour attaquer, 2 pour l'action speciale ou 3 pour te proteger.\n");
+        printf("\nTape 1 pour attaquer, 2 pour l'action speciale ou 3 pour te proteger.\n");
         scanf("%d", &perso->choix);
 
         //Verifie que le joueur ne donne pas un autre chiffre que 1, 2 ou 3
@@ -120,7 +115,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[],
             printf("Vous n'avez plus assez de pm.\n");
         }
         //Vérifie les deux autres actions
-        if (perso->choix == 3 || perso->choix == 1)
+        if (perso->choix == 3 || perso->choix == 1 || (perso->choix == 2 && perso->id == 3))
         {
             check = 1;
         }
@@ -128,25 +123,28 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[],
 
     if (perso->choix == 1)
     {
-		//choix=0;
-        printf("Choisissez un monstre a attaquer.\n");
-        scanf("%d", &monstreChoisi);
-		
-        tMonstre[monstreChoisi].life -= perso->degat;
-        printf("%d life monstre\n", tMonstre[monstreChoisi].life);
+        while (choix == 0)
+        {
+            //printf("1");
+            printf("Choisissez un monstre a attaquer.\n");
+            scanf("%d", &monstreChoisi);
 
-        if(tMonstre[monstreChoisi].life <= 0)
+            choix = checkMonstreChoisi(tMonstre, monstreChoisi, nbMonstre);
+        }
+
+        tMonstre[monstreChoisi].life -= perso->degat;
+        printf("Le monstre %d a subit %d degats.\n", monstreChoisi, perso->degat);
+
+        if (tMonstre[monstreChoisi].life <= 0)
         {
             printf("le monstre est mort");
-            perso->xp ++;
+            perso->xp++;
             xpPerso(perso);
         }
     }
     if (perso->choix == 3)
     {
-
         perso->resistance *= 2;
-        printf("%d resistance", perso->resistance);
         printf("Vous subissez 2x moins de degats pendant se tour.\n");
     }
 
@@ -154,6 +152,7 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[],
     {
 
         //mage
+        //ajouter une protection
         if (perso->id == 1)
         {
             int i;
@@ -166,75 +165,87 @@ void actionPerso(perso *perso, struct Monstre tMonstre[], struct Perso tPerso[],
             {
                 tPerso[i].life = 100;
             }
-            printf("vie : %d\n", tPerso[i].life);
+            printf("Vous avez %dPM, le perso %d a %dPV\n", perso->pm, i + 1, tPerso[i].life);
         }
         //archer
         if (perso->id == 2)
-        {	//choix=0;
-            printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d", &monstreChoisi);
+        {
+            while (choix == 0)
+            {
+                printf("Choisissez un monstre a attaquer.\n");
+                scanf("%d", &monstreChoisi);
+
+                choix = checkMonstreChoisi(tMonstre, monstreChoisi, nbMonstre);
+            }
             tMonstre[monstreChoisi].life -= 10;
             tMonstre[monstreChoisi].poison = 2;
             perso->pm -= 5;
-            printf("pm : %d, pv monstre : %d \n", perso->pm, tMonstre[monstreChoisi].life);
+            printf("Vous avez %dPM, le monstre %d a %dPV\n", perso->pm, monstreChoisi, tMonstre[monstreChoisi].life);
         }
 
         //tank
         if (perso->id == 3)
-        {	//choix=0;
-            printf("Choisissez un monstre a attaquer.\n");
-            scanf("%d", &monstreChoisi);
+        {
+            while (choix == 0)
+            {
+                printf("Choisissez un monstre a attaquer.\n");
+                scanf("%d", &monstreChoisi);
+
+                choix = checkMonstreChoisi(tMonstre, monstreChoisi, nbMonstre);
+            }
             tMonstre[monstreChoisi].agro = 1;
-            printf("alfred agro le tank %d", tMonstre[monstreChoisi].agro);
+            printf("Le tank a agro le monstre %d.\n", monstreChoisi);
         }
     }
 }
 
-void actionMonstre(struct Monstre tMonstre[], struct Perso tPerso[], int nbMonstre){
-	int persoChoisi=(rand()%3)+1;
-	
-	for (int i = 0; i < nbMonstre; i++){
-		
-		if (tMonstre[i].agro = 1){
-			tPerso[2].life -= tMonstre[i].degats;
-		}
-		else{
-			if (tMonstre[i].pm >=5) {
-				
-				//1 pour le soin, 2 pour l'attaque et 3 pour se protéger
-				tMonstre[i].choix=(rand ()%3)+1; //entre 1 et 3
-			}
-			if (tMonstre[i].pm < 5) {
-				
-				//2 pour l'attaque et 3 pour se protéger
-				tMonstre[i].choix=(rand ()%2)+2; // entre 2 et 3
-			}
-			
-			if( tMonstre[i].choix == 1){
-				tMonstre[i].life += 20;
-				if (tMonstre[i].life > 100){
-                	tMonstre[i].life = 100;
+void actionMonstre(monstre tMonstre[], perso tPerso[], int nbMonstre)
+{
+    for (int i = 0; i < nbMonstre; i++)
+    {
+        if (tMonstre[i].agro == 1)
+        {
+            tPerso[2].life -= tMonstre[i].degats / tPerso[2].resistance;
+            printf("Le monstre %d a attaquer le tank car il l'avait agro. Le tank a %d pv.\n", i, tPerso[2].life);
+        }
+        else
+        {
+            if (tMonstre[i].pm >= 5 && tMonstre[i].life < 90)
+            {
+                //1 pour le soin, 2 pour l'attaque et 3 pour se protéger
+                tMonstre[i].choix = (rand() % 3) + 1; //entre 1 et 3
             }
-			
-			tMonstre[i].pm -= 5;
-			printf("Le monstre se soigne, il a maintenant %d de points de vie\n", tMonstre[i].life);
-				
-			}
-			
-			if( tMonstre[i].choix == 2){
-				
-				tPerso[persoChoisi].life -= 10 /tPerso[persoChoisi].resistance;
-				printf("Le monstre attaque, vous avez maintenant %d de points de vie\n",tPerso[persoChoisi].life);
-			}
-			
-			if(tMonstre[i].choix==3){
-				tMonstre[i].resistance *= 2;
-			printf("Le monstre resiste ! Les degats qu'il recoit sont divises par %d. \n", tMonstre[i].resistance);
-			}
-		}
-		
-		
-	}
+            else
+            {
+                //2 pour l'attaque et 3 pour se protéger
+                tMonstre[i].choix = (rand() % 2) + 2; // entre 2 et 3
+            }
+        }
+        if (tMonstre[i].choix == 1)
+        {
+            tMonstre[i].life += 20;
+            if (tMonstre[i].life > 100)
+            {
+                tMonstre[i].life = 100;
+            }
+
+            tMonstre[i].pm -= 5;
+            printf("Le monstre %d se soigne, il a maintenant %d de points de vie\n", i, tMonstre[i].life);
+        }
+
+        if (tMonstre[i].choix == 2)
+        {
+            int persoChoisi = (rand() % 3);
+            tPerso[persoChoisi].life -= tMonstre[i].degats / tPerso[persoChoisi].resistance;
+            printf("Le monstre %d attaque le perso %d, il a maintenant %d de points de vie.\n", i, persoChoisi + 1, tPerso[persoChoisi].life);
+        }
+
+        if (tMonstre[i].choix == 3)
+        {
+            tMonstre[i].resistance *= 2;
+            printf("Le monstre %d resiste ! Les degats qu'il recoit sont divises par %d.\n", i, tMonstre[i].resistance);
+        }
+    }
 }
 
 int main()
@@ -242,7 +253,8 @@ int main()
 
     int persoChoisi;
     int nbMonstre;
-	
+
+    srand(time(NULL));
 
     //Creation Perso
 
@@ -252,48 +264,53 @@ int main()
 
     perso tPerso[3] = {mage, archer, tank};
 
-    srand(time(NULL));
-
     printf("Combien de monstres voulez vous affronter ?");
     scanf("%d", &nbMonstre);
 
     monstre tMonstre[nbMonstre];
     creationMonstre(tMonstre, nbMonstre);
 
-    while (mage.life > 0 && archer.life > 0 && tank.life > 0)
+    while (tPerso[0].life > 0 && tPerso[1].life > 0 && tPerso[2].life > 0)
     {
         //avant que le joueur ne joue
         //regain d'un point de mana
-        if (mage.pm < 20)
+        if (tPerso[0].pm < 20)
         {
-            mage.pm++;
+            tPerso[0].pm++;
         }
-        if (archer.pm < 5)
+        if (tPerso[1].pm < 5)
         {
-            archer.pm++;
+            tPerso[1].pm++;
         }
 
-        //action du poison si necessaire
+        //pour les monstrs
         for (int i = 0; i < nbMonstre; i++)
         {
+
+            //regain de mana
+            if (tMonstre[i].pm < 5)
+            {
+                tMonstre[i].pm++;
+            }
+            //action du poison si necessaire
             if (tMonstre[i].poison > 0)
             {
                 tMonstre[i].poison--;
                 tMonstre[i].life -= 10;
-                printf("%d pv d'alfred avec poison\n", tMonstre[i].life);
+                printf("Le monstre %d a perdu 10 PV avec le poison\n", i);
             }
         }
 
         //tour de jeu pour chaque perso
-        printf("\nVous jouez le mage :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : soin\n", mage.life, mage.pm, mage.degat, mage.resistance);
-        actionPerso(&tPerso[0], tMonstre, tPerso);
-        printf("\nVous jouez l'archer :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : fleche empoisonnes\n", archer.life, archer.pm, archer.degat, archer.resistance);
-        actionPerso(&tPerso[1], tMonstre, tPerso);
-        printf("\nVous jouez le tank :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : agro\n", tank.life, tank.pm, tank.degat, tank.resistance);
-        actionPerso(&tPerso[2], tMonstre, tPerso);
+        printf("\nVous jouez le mage :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : soin\n\n", tPerso[0].life, tPerso[0].pm, tPerso[0].degat, tPerso[0].resistance);
+        actionPerso(&tPerso[0], tMonstre, tPerso, nbMonstre);
+        printf("\nVous jouez l'archer :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : fleche empoisonnes\n\n", tPerso[1].life, tPerso[1].pm, tPerso[1].degat, tPerso[1].resistance);
+        actionPerso(&tPerso[1], tMonstre, tPerso, nbMonstre);
+        printf("\nVous jouez le tank :\nPV : %d\nPM : %d\nDegats :%d\nResistance :%d\nAction speciale : agro\n\n", tPerso[2].life, tPerso[2].pm, tPerso[2].degat, tPerso[2].resistance);
+        actionPerso(&tPerso[2], tMonstre, tPerso, nbMonstre);
 
-
-	    actionMonstre(tMonstre, tPerso, nbMonstre);
+        //tour des monstres
+        actionMonstre(tMonstre, tPerso, nbMonstre);
         //apres le tour des monstres
         for (int i = 0; i < nbMonstre; i++)
         {
@@ -301,9 +318,9 @@ int main()
         }
 
         //Une fois le tour terminer
-        mage.resistance = 1;
-        archer.resistance = 1;
-        tank.resistance = 2;
+        tPerso[0].resistance = 1;
+        tPerso[1].resistance = 1;
+        tPerso[2].resistance = 2;
     }
 
     return 0;

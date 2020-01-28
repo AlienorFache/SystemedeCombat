@@ -4,7 +4,6 @@
 
 struct Monstre
 {
-
     int life;
     int pm;
     int degats;
@@ -249,6 +248,7 @@ void actionMonstre(monstre tMonstre[], perso tPerso[], int nbMonstre)
                     printf("Le monstre %d resiste ! Les degats qu'il recoit sont divises par %d.\n", i, tMonstre[i].resistance);
                 }
             }
+
         }
     }
 }
